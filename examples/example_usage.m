@@ -1,4 +1,6 @@
 simple_graphs;
+addpath(genpath('../ncut'));
+addpath(genpath('../helper_fxns'));
 
 input('Press any key to start graph draw.');
 sgraphdraw(W1);

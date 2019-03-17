@@ -61,16 +61,20 @@ end
 
 
 minval = min(min(W));   % finds smallest entry in W
-if minval < 0
-     fprintf('The graph is a signed graph  \n')
-else
-     fprintf('The graph is an unsigned graph  \n')
+if display
+    if minval < 0
+        fprintf('The graph is a signed graph  \n')
+    else
+        fprintf('The graph is an unsigned graph  \n')
+    end
 end
 
 Dv = sum(abs(W));       % vector of degrees
+
 if sum(Dv < tol)>0
     error('sncut:W has 0 column which means that the graph has isolated nodes');
 end
+
 
 D = diag(Dv);           %  computes degree matrix of absolute values
 degv = D*ones(m,1); d = ones(m,1)'*degv; % vector of degrees and total volume
@@ -95,16 +99,19 @@ Bs = 0;
 [U5,S5,V5] = fsvd(2*eye(m) - Ls,k);
 
 lamb1 = S5(1,1);
-  fprintf('lamb1 = %d \n',lamb1)
-  fprintf('smallest eigenvalue of Ls = %d \n',2-lamb1)
-  if minval < 0
-     if abs(2-lamb1) < tol 
-        fprintf('The graph is balanced  \n')
-     else
-        fprintf('The graph is unbalanced  \n')
-     end
+  if display
+    fprintf('lamb1 = %d \n',lamb1)
+    fprintf('smallest eigenvalue of Ls = %d \n',2-lamb1)
+      if minval < 0
+         if abs(2-lamb1) < tol
+            fprintf('The graph is balanced  \n')
+         else
+            fprintf('The graph is unbalanced  \n')
+         end
+      end
   end
   
+
   %  Prompts for method to compute eigenvectors of Ls, and number K of clusters
   %prompt = 'Method (1 = svd(Ls), 2 = svd(Bs), 3 = eig(Ls), 4 = svd(2*I - Ls); 0 quit:';
   %mm = input(prompt);
@@ -135,13 +142,17 @@ lamb1 = S5(1,1);
   rowsum = 1;
   [Zr,~,fail] = rowsumto1(Z2,rowsum,0);
   if fail == 1
-     fprintf('Failed in rowtosum1 for Z2 \n')
+     if display
+        fprintf('Failed in rowtosum1 for Z2 \n')
+     end
      Zr = Z2;
   end
   % Zr
   [Zr1,~,fail1] = rowsumto1(Z1,rowsum,0);
   if fail1 == 1
-     fprintf('Failed in rowtosum1 for Z1 \n')
+     if display
+        fprintf('Failed in rowtosum1 for Z1 \n')
+     end
      Zr1 = Z1;
   end
   %  Normalizes the rows to have unit length
@@ -152,11 +163,15 @@ lamb1 = S5(1,1);
   [Zn1,~,~,flag1,~] = normcol(Z1);
 
   if flag == 1
-     fprintf('Failed in normcol for Z2 \n')
+     if display
+        fprintf('Failed in normcol for Z2 \n')
+     end
      Zn = Z2;
   end
   if flag1 == 1
-     fprintf('Failed in normcol for Z1 \n')
+     if display
+        fprintf('Failed in normcol for Z1 \n')
+     end
      Zn1 = Z1;
   end
   if initsw == 2
@@ -184,7 +199,10 @@ lamb1 = S5(1,1);
   end
   
   step = 1;
-  fprintf('step = %d \n',step)
+  if display
+     fprintf('step = %d \n',step)
+  end
+
   % showZ = 1;  %  to display the graph associated with Z
   % Finds the best initial rotation Rc and discrete solution Xc
   [Rc,sw,N1,N2,N3,N4,Xc] = initR2_v4(W,find2_X,Zinit2,Zinit1,R1,K,a0,a,0,0,0);
@@ -194,8 +212,11 @@ lamb1 = S5(1,1);
      Z = Zinit2;
   end
 
-  fprintf('*********************************************** \n')
-  fprintf('Intitial R and X have been found; iterating to improve them \n')
+  if display
+     fprintf('*********************************************** \n')
+     fprintf('Intitial R and X have been found; iterating to improve them \n')
+  end
+
   
 
   eX = sqrt(trace((Xc - Z*Rc)'*(Xc - Z*Rc)));
@@ -203,7 +224,9 @@ lamb1 = S5(1,1);
   if whichA == 2 
      [Rc,fail] = find_A(Xc,Z,show1,show2); 
      if fail == 1
-        fprintf('A is singular in find_A  \n')
+        if display
+            fprintf('A is singular in find_A  \n')
+        end
      end
   else
      if whichA == 3
@@ -221,17 +244,23 @@ lamb1 = S5(1,1);
   %  finds best Xc and Rc
   while eRn < eR && step <= maxiter
      step = step + 1;
-     fprintf('step = %d \n',step)
+     if display
+        fprintf('step = %d \n',step)
+     end
      [Xc, ~]  = find2_X(Z,Rc,a,0,0);  
      DiffXc = (Xc - Xc0)/a;
 
      NDXc = trace(DiffXc'*DiffXc)/2;  % Number of rows in Xc that changed
      if NDXc < tol
         nochangeinX = 1;
-        fprintf('Xc did not change, NDXc = %d \n',NDXc)
+        if display
+            fprintf('Xc did not change, NDXc = %d \n',NDXc)
+        end
      else
         nochangeinX = 0;
-        fprintf('Xc changed, NDXc = %d \n',NDXc)
+        if display
+            fprintf('Xc changed, NDXc = %d \n',NDXc)
+        end
      end
      % Zn1 = Z*Rc; 
      eX = sqrt(trace((Xc - Z*Rc)'*(Xc - Z*Rc)));
@@ -239,14 +268,18 @@ lamb1 = S5(1,1);
      % eX1 = trace(Zn1'*Xc);
      if nochangeinX == 1
        % fprintf('Same Xc and Rc as in the previous step \n')   
-        fprintf('Number of steps to reach a minimum Ncut = %d \n',step-1)
+        if display
+            fprintf('Number of steps to reach a minimum Ncut = %d \n',step-1)
+        end
         convlist(2*step) = eRn;
         eRn = eR;  % stop the while loop
      else
         if whichA == 2
            [Rc,fail] = find_A(Xc,Z,0,0);
            if fail == 1
-              fprintf('A is singular in find_A \n')              
+              if display
+                 fprintf('A is singular in find_A \n')
+              end
            end
         else
            if whichA == 3
@@ -260,8 +293,10 @@ lamb1 = S5(1,1);
         convlist(2*step) = eRn;
         if eR < eRn
            Xc = Xc0; Rc = Rc0;   % the last try was worse, use the previous one
-           fprintf('Last try was worse than the previous step  \n')
-           fprintf('Number of steps to reach a minimum Ncut = %d \n',step-1)
+           if display
+              fprintf('Last try was worse than the previous step  \n')
+              fprintf('Number of steps to reach a minimum Ncut = %d \n',step-1)
+           end
         else
            Xc0 = Xc; Rc0 = Rc;   % last try was better
         end
@@ -270,8 +305,11 @@ lamb1 = S5(1,1);
      % eX2 = trace(Zn2'*Xc);
   end
   
-  fprintf('*********************************************************** \n')
-  fprintf('total number of steps = %d \n',step)
+  if display
+    fprintf('*********************************************************** \n')
+    fprintf('total number of steps = %d \n',step)
+  end
+
   XXc = (1/a)*Xc;           % to get a matrix of 0's and 1's
   [mval IDX] = max(XXc');
   IDX = IDX';
