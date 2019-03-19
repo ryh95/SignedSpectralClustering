@@ -1,4 +1,4 @@
-function [ IDX, XXc ] = sncut(W, k, varargin)
+function [ IDX, XXc, Z] = sncut(W, k, varargin)
 %SNCUT Signed normalized cut method for clustering.
 %   IDX = SNCUT(W, K) partitions the nodes described by the symmetric 
 %         m-by-m degree matrix W into K clusters. 
