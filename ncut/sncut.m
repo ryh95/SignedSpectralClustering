@@ -43,9 +43,9 @@ if k<2 || k >m
     error('sncut:Incorrect number of K cluster');
 end
 
-pnames = {   'maxiters'  'initZmethod' 'findAmethod' 'threshold' 'display' 'type'};
-dflts =  {   50           1            1             1e-14        0        'hard'};
-[maxiter,initZmethod,findAmethod,tol,display, type] ...
+pnames = {   'maxiters'  'initZmethod' 'findAmethod' 'threshold' 'display' 'type','force_signed_graph'};
+dflts =  {   50           1            1             1e-14        0        'hard',false};
+[maxiter,initZmethod,findAmethod,tol,display, type,force_signed_graph] ...
     = parseArgs(pnames, dflts, varargin{:});
 
 if strcmp(type, 'hard')
@@ -65,6 +65,9 @@ if display
     if minval < 0
         fprintf('The graph is a signed graph  \n')
     else
+        if force_signed_graph == true
+            error('sncut: The graph is an unsigned graph');
+        end
         fprintf('The graph is an unsigned graph  \n')
     end
 end
